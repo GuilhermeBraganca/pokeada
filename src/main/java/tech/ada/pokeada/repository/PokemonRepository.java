@@ -1,8 +1,12 @@
 package tech.ada.pokeada.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tech.ada.pokeada.model.Pokemon;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PokemonRepository extends JpaRepository<Pokemon, Long> {
@@ -19,6 +23,12 @@ public interface PokemonRepository extends JpaRepository<Pokemon, Long> {
 
     * Obter Pokémon pelo nome.
  * */
+
+    List<Pokemon> findByName(String name);
+
+
+    @Query(value = "SUA QUERY", nativeQuery = true)
+    Optional<Pokemon> findBySpeedGrea(Integer speed);
 
 
 }

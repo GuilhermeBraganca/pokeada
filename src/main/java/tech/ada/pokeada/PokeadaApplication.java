@@ -26,5 +26,6 @@ public class PokeadaApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		/* Teste seu método aqui
 			repository.find... */
+		repository.findAll();
 	}
 }
