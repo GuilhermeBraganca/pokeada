@@ -1,5 +1,7 @@
 package tech.ada.pokeada.config;
 
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,6 +32,15 @@ public class GlobalExceptionHandler {
         StandardError error = new StandardError();
         error.setStatusCode(HttpStatus.BAD_REQUEST.value());
         error.setMessage(e.getFieldError().getDefaultMessage());
+        error.setTimestamp(System.currentTimeMillis());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ValidationException.class})
+    public ResponseEntity<StandardError> illegalArgumetnHandler(ValidationException e) {
+        StandardError error = new StandardError();
+        error.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        error.setMessage(e.getMessage());
         error.setTimestamp(System.currentTimeMillis());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
