@@ -1,5 +1,6 @@
 package tech.ada.pokeada.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import tech.ada.pokeada.dto.NovoUsuarioDTO;
 import tech.ada.pokeada.dto.UsuarioDTO;
@@ -15,12 +16,15 @@ import java.util.stream.Collectors;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder encoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder encoder) {
         this.usuarioRepository = usuarioRepository;
+        this.encoder = encoder;
     }
 
     public UsuarioDTO salvar(NovoUsuarioDTO user) {
+        user.setPass(encoder.encode(user.getPass()));
         return UsuarioDTOParser
                 .toUsuarioDTO(usuarioRepository.save(UsuarioDTOParser.toUsuarioEntity(user)));
     }

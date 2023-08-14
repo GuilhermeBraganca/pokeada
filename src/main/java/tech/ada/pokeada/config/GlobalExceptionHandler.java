@@ -1,7 +1,11 @@
 package tech.ada.pokeada.config;
 
+import jakarta.validation.ConstraintDefinitionException;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,7 +20,7 @@ public class GlobalExceptionHandler {
 
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({PokemonNaoEncontradoException.class, UsuarioNaoEncontradoException.class })
+    @ExceptionHandler({PokemonNaoEncontradoException.class, UsuarioNaoEncontradoException.class, UsernameNotFoundException.class})
     public StandardError handleNotFoundException(RuntimeException e) {
         StandardError error = new StandardError();
         error.setStatusCode(HttpStatus.NOT_FOUND.value());
@@ -30,6 +34,15 @@ public class GlobalExceptionHandler {
         StandardError error = new StandardError();
         error.setStatusCode(HttpStatus.BAD_REQUEST.value());
         error.setMessage(e.getFieldError().getDefaultMessage());
+        error.setTimestamp(System.currentTimeMillis());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ConstraintViolationException.class, ConstraintDefinitionException.class})
+    public ResponseEntity<StandardError> validationHandler(ValidationException e) {
+        StandardError error = new StandardError();
+        error.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        error.setMessage(e.getMessage());
         error.setTimestamp(System.currentTimeMillis());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }

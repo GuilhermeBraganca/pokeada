@@ -26,6 +26,8 @@ public class NovoUsuarioDTO {
     @CPF(message = "CPF inválido")
     private String cpf;
 
+    private Integer idade;
+
     public String getEmail() {
         return email;
     }

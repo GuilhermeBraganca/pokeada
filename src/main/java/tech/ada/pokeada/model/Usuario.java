@@ -29,6 +29,8 @@ public class Usuario {
     @Column(name = "DATA_CRIACAO")
     private LocalDateTime dataCriacao;
 
+
+
     public Usuario() {
         dataCriacao = LocalDateTime.now();
     }
@@ -80,4 +82,6 @@ public class Usuario {
     public void setCpf(String cpf) {
         this.cpf = cpf;
     }
+
+
 }
