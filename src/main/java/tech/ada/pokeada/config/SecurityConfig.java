@@ -5,20 +5,28 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import tech.ada.pokeada.config.filter.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter filter;
+
+    public SecurityConfig(JwtAuthenticationFilter filter) {
+        this.filter = filter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -29,16 +37,17 @@ public class SecurityConfig {
                     requests.requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**"))
                             .permitAll()
 
-                            .requestMatchers(AntPathRequestMatcher.antMatcher("/auth"))
+                            .requestMatchers(new AntPathRequestMatcher("/usuario"))
                             .permitAll()
 
-                            .requestMatchers(new AntPathRequestMatcher("/usuario"))
+                            .requestMatchers(new AntPathRequestMatcher("/auth"))
                             .permitAll()
 
                             .requestMatchers(new AntPathRequestMatcher("/pokemon"))
                             .authenticated();
                 })
-                .httpBasic(Customizer.withDefaults());
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
